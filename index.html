@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그') — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+    .text-xs { font-size: 1rem !important; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그') — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그')</p>
+          <p class="text-xs text-slate-400">3채널 매칭 · 차등 과금 · 보안 아키텍처</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <main class="min-w-0">
+
+        <!-- HOME -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그')</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">서류 검증 기반 신뢰도 높은 유저를 대상으로 외모·프로필·커뮤니티 3채널 매칭과 채널별 차등 과금을 결합한 하이브리드 데이팅 플랫폼을 100일 안에 양대 마켓 동시 런칭까지 턴키로 수행합니다. 민감 서류 즉시 파기 보안 아키텍처와 3채널 이중 과금 방지 동기화 로직을 핵심 차별점으로 제안합니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">43,200,000원 (VAT 별도)</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">100일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">앱 / 중개·매칭</span>
+              <a href="https://www.wishket.com/project/155384/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">3채널 매칭 구조 분석, 핵심 요구사항 정리, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(M/D) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">사용자 정의, 3채널 기능 요구사항, 보안 NFR</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">100일 단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">매칭 플랫폼·Flutter B2C·인앱결제 수행 경험</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3</p>
+              <p class="mt-1 text-sm text-slate-500">채널 매칭 구조</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100<span class="text-base">일</span></p>
+              <p class="mt-1 text-sm text-slate-500">양대 마켓 턴키 런칭</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">10<span class="text-base">+</span></p>
+              <p class="mt-1 text-sm text-slate-500">유사 프로젝트 수행</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100<span class="text-base">%</span></p>
+              <p class="mt-1 text-sm text-slate-500">소스코드 귀속</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">보안과 매칭 로직, 두 핵심을 함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 견적·공수·PRD·일정·포트폴리오 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>외모·프로필·커뮤니티 3채널 분리 + 채널별 차등 과금(다이아 5/10/20) + 서류 검증 후 즉시 파기 보안 아키텍처를 핵심 축으로 하는 프리미엄 데이팅 플랫폼을 턴키로 구축합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/155384/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그')</a></td></tr>
+                <tr><td>카테고리</td><td>안드로이드/iOS · 중개·매칭 플랫폼 · 기획+디자인+개발 턴키</td></tr>
+                <tr><td>제안 금액</td><td>43,200,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>100일 (계약 체결 후 즉시 시작 ~ 양대 마켓 런칭)</td></tr>
+                <tr><td>핵심 기술</td><td>Flutter 3.x · NestJS · PostgreSQL · Redis · AWS (KMS·S3·RDS·ElastiCache)</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>3채널 매칭 UX 분리</strong>: 외모(틴더형 스와이프, 얼굴 선공개) / 프로필(해시태그·텍스트 리스트, 스펙 선공개) / 커뮤니티(직군·관심사 익명 게시판) 채널을 독립 화면 흐름과 데이터 모델로 분리.</li>
+                <li><strong>차등 과금 + 이중 과금 방지</strong>: 채널별 정보 깊이에 따라 5/10/20 다이아 차감, 3채널 간 동일 프로필 열람 상태를 Redis 분산 락으로 동기화하여 동일 유저 중복 결제 방지.</li>
+                <li><strong>다중 서류 검증 + 즉시 파기</strong>: 신분증·자격증·소득금액증명원·자동차등록증을 KMS 봉투 암호화로 S3에 저장, 관리자 승인 직후 영구 삭제 스케줄러가 객체와 키를 동시에 파기.</li>
+                <li><strong>인앱 결제 + 다이아 지갑</strong>: Apple StoreKit 2 / Google Play Billing 영수증 서버 검증, 구매·환불·소비 트랜잭션의 멱등 처리 및 멀티 디바이스 지갑 동기화.</li>
+                <li><strong>프리미엄 호감 전송</strong>: 본인 연락처 첨부 호감 전송 시 고비용 다이아 차감 + 1회성 토큰 노출, 수신자 거부 시 연락처 자동 마스킹.</li>
+                <li><strong>관리자(Admin) 웹</strong>: 서류 심사·승인·파기, 어뷰징 신고·계정 정지, 가입자/매출 대시보드 (RBAC + 감사 로그).</li>
+                <li><strong>24시간 신규 회원 평가(Rating)</strong>: 가입 직후 24h 동안 기존 회원 평가 노출, 평가 점수에 기반한 노출 가중치 산정.</li>
+                <li><strong>Phase 2 확장 대비</strong>: 행동 로그·해시태그를 정형화하여 적재해 추후 NLP 기반 AI 큐레이션 매칭 도입 가능한 데이터 모델 설계.</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <p><strong>① 매칭·프로필·메시징 플랫폼 직접 수행 경험</strong> — 비즈니스 매칭 플랫폼(Connectin)을 Flutter + NestJS 풀스택으로 3개월 만에 베트남 양대 마켓 출시한 경험을 그대로 데이팅 도메인에 전이합니다. 명함 매칭에서 검증된 BLE 근거리 탐색·실시간 프로필 동기화·E2E 암호화 메시징 패턴이 본 프로젝트의 3채널 매칭과 1:1 대화 요청 기능에 직접 적용됩니다.</p>
+              <p><strong>② 인앱결제 + 게이미피케이션 다이아 시스템 검증된 패턴</strong> — Flutter B2C 앱(DayStarter, Fortune App)에서 Apple/Google 인앱결제 + 자체 다이아·포인트 경제 + 멀티 디바이스 지갑 동기화를 운영해 본 노하우를 가지고 있어, 차등 과금 알고리즘과 이중 과금 방지 로직을 안정적으로 설계할 수 있습니다.</p>
+              <p><strong>③ 민감 정보 보안 아키텍처 설계 경험</strong> — VC 펀드 관리 플랫폼(Series-B)에서 NICE KYC, 5계층 보안, DLP, GeoIP 기반 접근 제어를 구축한 경험으로 KMS 봉투 암호화·즉시 파기 스케줄러·감사 로그를 금융권 수준으로 설계합니다.</p>
+              <p><strong>④ 양대 마켓 동시 런칭 노하우</strong> — Flutter 단일 코드베이스로 iOS·Android 동시 출시(Calendar Share, DayStarter, Fortune App, Connectin) 경험으로 Apple App Review, Google Play 정책 리젝 사유(데이팅 카테고리 특수 정책 포함)를 사전 점검합니다.</p>
+              <p><strong>⑤ 1순위(금액) 부합 + 2순위(완성도) 보장</strong> — 본 견적은 클라이언트 예산 상한 대비 효율적 구성으로 책정하되, 검증된 플랫폼 패턴 재활용으로 산출물 완성도를 동급 견적 대비 우위로 보장합니다.</p>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Flutter 3.x</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Dart</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">BLoC / Riverpod</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">NestJS 10</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">PostgreSQL</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Redis</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Next.js (Admin)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">AWS KMS · S3 · RDS · ElastiCache</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Firebase Auth · FCM</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Apple StoreKit 2</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Google Play Billing</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">NICE 본인인증</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Docker · GitHub Actions</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion / Google Docs</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Figma</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub Issues / Linear</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ESTIMATE -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 공고 요구사항(3채널 매칭, 다중 서류 검증·즉시 파기, 차등 과금·인앱결제, 관리자 페이지)과 100일 양대 마켓 런칭 일정 분석을 기반으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그')</td></tr>
+                <tr><td>제안 금액</td><td><strong>43,200,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>100일 (계약 체결 직후 즉시 착수)</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획</td><td>요구사항 정의서, 3채널 IA, 보안·과금 정책, 화면 기획서(스토리보드)</td><td>1식</td><td>-</td><td>6,480,000원</td></tr>
+                  <tr><td>디자인</td><td>프리미엄 UI/UX, 디자인 시스템, Figma 원본 (앱 50화면 + Admin 20화면)</td><td>1식</td><td>-</td><td>6,480,000원</td></tr>
+                  <tr><td>프론트엔드 (Flutter)</td><td>iOS/Android 동시 런칭, 3채널 매칭 UI, 인앱결제 연동, 프로필/채팅</td><td>1식</td><td>-</td><td>13,000,000원</td></tr>
+                  <tr><td>백엔드 (NestJS)</td><td>RESTful API, 매칭/차등 과금 알고리즘, 영수증 검증, 본인인증 연동</td><td>1식</td><td>-</td><td>10,800,000원</td></tr>
+                  <tr><td>관리자 웹</td><td>Next.js 기반 Admin (서류 심사·파기, 신고 관리, 통계 대시보드)</td><td>1식</td><td>-</td><td>3,240,000원</td></tr>
+                  <tr><td>보안 인프라</td><td>AWS KMS 봉투 암호화 + 즉시 파기 스케줄러 + 감사 로그 + DB 설계</td><td>1식</td><td>-</td><td>2,160,000원</td></tr>
+                  <tr><td>QA / 배포</td><td>통합 QA, App Store / Play Store 심사 대응, 인프라 구축, 1개월 하자보수</td><td>1식</td><td>-</td><td>1,040,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>43,200,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li><strong>스코프 기반</strong>: 공고 명시 5대 영역(가입·인증, 3채널 매칭 UI/UX, 차등 과금·인앱결제, 프리미엄 호감 전송, 관리자 페이지)을 모두 포함하는 풀스코프 견적입니다.</li>
+                <li><strong>유사 프로젝트 단가 비교</strong>: 매칭 플랫폼(Connectin) 3개월 풀스택 딜리버리, Flutter B2C 앱(Fortune App) 3개월 인앱결제 포함 출시 단가와 비교하여 책정.</li>
+                <li><strong>1순위(금액) 부합</strong>: 클라이언트 예상 예산 범위(3,800~4,800만 원) 상한 대비 효율적 구성으로 책정.</li>
+                <li><strong>유지보수 별도 산정</strong>: 월 단위 유지보수 계약은 본 견적 외 별도 책정, 미팅 시 협의.</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>화면 기획서(스토리보드), Figma 디자인 원본 파일</li>
+                <li>시스템 아키텍처 다이어그램 및 ERD 설계서</li>
+                <li>iOS/Android 앱 소스 코드 + 백엔드 API 소스 코드 + 관리자 웹 소스 코드 (소유권 100% 클라이언트 귀속)</li>
+                <li>API 명세서 (Swagger/OpenAPI), DB 스키마 문서, 배포 가이드</li>
+                <li>관리자 페이지 사용자 매뉴얼</li>
+                <li>App Store / Google Play 스토어 등록 대행 (1회)</li>
+                <li>인프라 초기 세팅 (AWS 계정 위임 시), CI/CD 파이프라인 1식</li>
+                <li>런칭 후 1개월 무상 하자보수 (기능 결함 한정)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>AWS 서버 호스팅 비용 및 KMS 사용료 (클라이언트 계정 직접 결제)</li>
+                <li>Apple Developer Program / Google Play Console 등록 비용</li>
+                <li>NICE 본인인증, 외부 SMS, 푸시(FCM/APNs) 유료 사용량</li>
+                <li>도메인 구매 비용 및 SSL 인증서 (AWS ACM 무료 발급 가능)</li>
+                <li>Phase 2 AI 큐레이션 매칭(NLP) 모델 학습 비용 (확장 설계는 본 견적에 포함, 모델 구현은 별도)</li>
+                <li>하자보수 기간 이후 운영·유지보수 (별도 월정액 계약)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- MANDAY -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>3채널 매칭, 차등 과금, 다중 서류 검증·즉시 파기, 인앱결제, 관리자 웹 등 5개 핵심 기능 영역의 Man-Day(M/D)를 산출하여 일정·비용 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획 / 설계 (IA, 정책, 보안 아키텍처)</td><td>14 M/D</td><td>14.4%</td></tr>
+                <tr><td>UI/UX 디자인 (Figma)</td><td>15 M/D</td><td>15.5%</td></tr>
+                <tr><td>프론트엔드 (Flutter, iOS/Android)</td><td>30 M/D</td><td>30.9%</td></tr>
+                <tr><td>백엔드 (NestJS, API/매칭/과금)</td><td>23 M/D</td><td>23.7%</td></tr>
+                <tr><td>관리자 웹 (Next.js)</td><td>8 M/D</td><td>8.3%</td></tr>
+                <tr><td>QA / 배포 / 스토어 심사 대응</td><td>7 M/D</td><td>7.2%</td></tr>
+                <tr><th>합계</th><th>97 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="3">기획 / 설계</td><td>요구사항 정의서, 3채널 IA, 정보 구조</td><td>기획</td><td>5</td></tr>
+                  <tr><td>화면 기획서(스토리보드) 70+ 화면</td><td>기획</td><td>6</td></tr>
+                  <tr><td>3채널 과금 정책 + 보안 아키텍처 설계서</td><td>기획/아키텍트</td><td>3</td></tr>
+
+                  <tr><td rowspan="3">UI/UX 디자인</td><td>디자인 시스템 (컬러·타이포·컴포넌트 라이브러리)</td><td>디자인</td><td>4</td></tr>
+                  <tr><td>앱 50화면 디자인 (3채널 + 프로필 + 결제)</td><td>디자인</td><td>8</td></tr>
+                  <tr><td>관리자 웹 20화면 디자인</td><td>디자인</td><td>3</td></tr>
+
+                  <tr><td rowspan="6">FE (Flutter)</td><td>공통 인프라 (라우팅, 상태관리, API 클라이언트)</td><td>FE</td><td>4</td></tr>
+                  <tr><td>가입/본인인증/서류 업로드 플로우</td><td>FE</td><td>5</td></tr>
+                  <tr><td>외모 채널 (스와이프 카드, 블라인드 처리)</td><td>FE</td><td>5</td></tr>
+                  <tr><td>프로필 채널 (해시태그 리스트 UI, 스펙 공개)</td><td>FE</td><td>5</td></tr>
+                  <tr><td>커뮤니티 채널 (피드, 댓글, 1:1 대화 요청)</td><td>FE</td><td>6</td></tr>
+                  <tr><td>인앱결제 + 다이아 지갑 + 호감 전송</td><td>FE</td><td>5</td></tr>
+
+                  <tr><td rowspan="6">BE (NestJS)</td><td>인증/RBAC/JWT, 휴대폰 본인인증 연동</td><td>BE</td><td>3</td></tr>
+                  <tr><td>서류 업로드·KMS 암호화·즉시 파기 스케줄러</td><td>BE</td><td>4</td></tr>
+                  <tr><td>매칭 알고리즘 (룰 베이스, 가중치, 24h 평가)</td><td>BE</td><td>4</td></tr>
+                  <tr><td>차등 과금(5/10/20) + 이중 과금 방지 동기화</td><td>BE</td><td>5</td></tr>
+                  <tr><td>인앱결제 영수증 검증 + 다이아 지갑 트랜잭션</td><td>BE</td><td>4</td></tr>
+                  <tr><td>커뮤니티 게시판 + 1:1 대화/푸시 알림</td><td>BE</td><td>3</td></tr>
+
+                  <tr><td rowspan="3">관리자 웹</td><td>서류 심사 승인/반려 + 즉시 파기 제어</td><td>FE/BE</td><td>3</td></tr>
+                  <tr><td>어뷰징 신고 관리 + 계정 정지</td><td>FE/BE</td><td>2</td></tr>
+                  <tr><td>가입자/매출 통계 대시보드</td><td>FE/BE</td><td>3</td></tr>
+
+                  <tr><td rowspan="3">QA / 배포</td><td>통합 QA, 회귀 테스트, 시나리오 테스트</td><td>QA</td><td>3</td></tr>
+                  <tr><td>App Store / Play Store 심사 대응 (데이팅 카테고리)</td><td>배포</td><td>3</td></tr>
+                  <tr><td>AWS 인프라 구축 + CI/CD 파이프라인</td><td>DevOps</td><td>1</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준, 버퍼 10~15% 포함</li>
+                <li>유사 프로젝트 수행 경험(매칭 플랫폼 Connectin, Flutter B2C Fortune App·DayStarter) 기반 효율적 개발</li>
+                <li>모바일 앱 양대 마켓 동시 출시 + 인앱결제 + 보안 검증 일정 버퍼 반영</li>
+                <li>주말·공휴일 제외, 디자인↔개발 일부 병렬 가능 구간 활용</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>본 PRD는 공고 명시 사항을 기반으로 1차 정리한 초안이며, 킥오프 워크숍에서 클라이언트와 함께 확정합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>경제적 여유와 뚜렷한 라이프스타일을 가진 20대 후반~30대 중반 타겟층을 위한 프리미엄 데이팅 플랫폼을 구축합니다. 단순 스펙 나열을 넘어 외모·프로필·커뮤니티 3채널을 분리해 사용자가 원하는 방식으로 매칭을 시도하게 하고, 채널별 정보 깊이에 따라 다이아(가상 재화)가 차등 차감되는 하이브리드 과금 모델을 구현합니다. 벤치마킹 모델은 스카이피플이며, 신뢰도 높은 유저 풀을 위해 다중 서류 검증을 거치되 민감 서류는 검증 직후 즉시 파기하는 보안 아키텍처를 핵심 차별점으로 합니다.</p>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>신규 가입자</td><td>본인인증 + 서류 검증 진행 중 사용자</td><td>휴대폰 본인인증, 서류 업로드, 심사 대기, 24h 회원 평가 대상</td></tr>
+                  <tr><td>일반 회원 (남성)</td><td>심사 통과 후 활동 중인 다이아 결제 회원</td><td>3채널 탐색, 다이아 충전·소비, 호감 전송, 1:1 대화</td></tr>
+                  <tr><td>일반 회원 (여성)</td><td>심사 통과 후 활동 중인 회원</td><td>3채널 탐색, 호감 수락/거절, 커뮤니티 활동</td></tr>
+                  <tr><td>관리자 (Admin)</td><td>서류 심사 및 운영 담당</td><td>서류 심사 승인/반려, 어뷰징 신고 처리, 통계 조회</td></tr>
+                  <tr><td>슈퍼 관리자</td><td>최고 관리자 (운영자 계정 관리)</td><td>관리자 계정 관리, 다이아 단가 정책 변경, 매출 대시보드</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+              <h3>3.1 가입 및 인증 시스템</h3>
+              <ul>
+                <li><strong>[필수]</strong> 휴대폰 본인인증 연동 (NICE / KCB)</li>
+                <li><strong>[필수]</strong> 다중 서류 업로드 (신분증, 자격증, 소득금액증명원, 자동차 등록증)</li>
+                <li><strong>[필수]</strong> 업로드 서류 KMS 봉투 암호화 저장 (S3 + KMS Customer Master Key)</li>
+                <li><strong>[필수]</strong> 관리자 승인 직후 즉시 파기 스케줄러 (S3 객체 + KMS 데이터 키 동시 삭제, 감사 로그 보존)</li>
+                <li><strong>[필수]</strong> 신규 가입자 24시간 회원 평가(Rating) 시스템 + 평가 가중치 노출 알고리즘</li>
+                <li><strong>[필수]</strong> 가입 거절 시 사유 안내 및 재가입 제한 정책</li>
+              </ul>
+
+              <h3>3.2 3채널 매칭 UI/UX</h3>
+              <ul>
+                <li><strong>[필수]</strong> 외모 매칭: 틴더형 카드 스와이프 (좋아요/패스), 얼굴 선공개, 상세 스펙 블라인드 처리</li>
+                <li><strong>[필수]</strong> 프로필 매칭: 해시태그/텍스트 리스트 UI, 상세 스펙 선공개, 얼굴 사진 블라인드 처리</li>
+                <li><strong>[필수]</strong> 커뮤니티 매칭: 직군/관심사 기반 익명 게시판, 게시글/댓글/좋아요, 1:1 대화 요청</li>
+                <li><strong>[필수]</strong> 채널 간 동일 프로필 열람 상태 실시간 동기화 (Redis Pub/Sub)</li>
+                <li><strong>[필수]</strong> 차단·신고 기능 채널 전반 적용</li>
+              </ul>
+
+              <h3>3.3 차등 과금 및 인앱 결제</h3>
+              <ul>
+                <li><strong>[필수]</strong> Apple App Store 인앱결제 (StoreKit 2) + Google Play Billing 연동</li>
+                <li><strong>[필수]</strong> 다이아 충전 패키지 (Tier별 상품 구성, 추후 Admin에서 단가 변경 가능)</li>
+                <li><strong>[필수]</strong> 채널별 차등 차감 알고리즘 (외모 5다이아, 프로필 10다이아, 커뮤니티 20다이아 등 정책 가능)</li>
+                <li><strong>[필수]</strong> 이중 과금 방지: 동일 프로필 24시간 내 중복 열람 시 추가 차감 없음 (Redis 분산 락)</li>
+                <li><strong>[필수]</strong> 영수증 서버 검증 (App Store / Play Store) + 환불·취소 트랜잭션 멱등 처리</li>
+                <li><strong>[필수]</strong> 다이아 지갑 잔액·거래 내역 조회 + 멀티 디바이스 동기화</li>
+              </ul>
+
+              <h3>3.4 프리미엄 호감 전송</h3>
+              <ul>
+                <li><strong>[필수]</strong> 호감 전송 시 본인 실제 연락처 다이렉트 첨부 + 고비용 다이아 차감</li>
+                <li><strong>[필수]</strong> 수신자 수락 시 연락처 노출, 거부 시 자동 마스킹 + 다이아 일부 환원 정책 (협의)</li>
+                <li><strong>[필수]</strong> 호감 전송/수신 알림 (FCM Push)</li>
+              </ul>
+
+              <h3>3.5 관리자(Admin) 페이지</h3>
+              <ul>
+                <li><strong>[필수]</strong> 서류 심사 큐 (승인/반려, 사유 메모, 즉시 파기 제어)</li>
+                <li><strong>[필수]</strong> 어뷰징 신고 관리 (신고 리스트, 처리 상태, 계정 정지/해제)</li>
+                <li><strong>[필수]</strong> 가입자 통계 (일/주/월 가입 추이, 활동 회원 수)</li>
+                <li><strong>[필수]</strong> 다이아 결제·소모 매출 대시보드 (채널별 소비 패턴, ARPU)</li>
+                <li><strong>[필수]</strong> 관리자 RBAC + 모든 민감 작업 감사 로그 (Audit Log)</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>보안 (서류)</td><td>AWS KMS 봉투 암호화, S3 객체 + 데이터 키 즉시 파기, 키 회전 정책</td></tr>
+                  <tr><td>보안 (통신)</td><td>전 구간 TLS 1.3, JWT 토큰(짧은 TTL + Refresh), 모바일 인증서 피닝</td></tr>
+                  <tr><td>보안 (어플리케이션)</td><td>SQL Injection·XSS 방어, OWASP Top 10 정기 점검, Rate Limiting</td></tr>
+                  <tr><td>개인정보 보호</td><td>민감정보 암호화 컬럼(pgcrypto), 접근 로그 보존, 개인정보 처리 방침 반영</td></tr>
+                  <tr><td>성능</td><td>API p95 응답 200ms 이내, 매칭 후보 조회 100ms 이내 (Redis 캐싱)</td></tr>
+                  <tr><td>가용성</td><td>월 99.5% 이상, 멀티 AZ RDS, S3 99.99%</td></tr>
+                  <tr><td>확장성</td><td>유저 행동 로그·해시태그 데이터 정형화 적재, Phase 2 NLP 모델 학습 데이터 호환</td></tr>
+                  <tr><td>관측성</td><td>Sentry 에러 모니터링, CloudWatch 메트릭, 결제·서류 도메인 별도 알림</td></tr>
+                  <tr><td>국제화</td><td>한국어 우선, 향후 다국어 확장 가능 구조 (i18n 키 분리)</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li><strong>크로스 플랫폼</strong>: Flutter 3.x 단일 코드베이스로 iOS 14+ / Android 8+ 동시 지원</li>
+                <li><strong>인앱결제</strong>: 디지털 재화(다이아) 판매는 반드시 Apple StoreKit / Google Play Billing 사용 (정책)</li>
+                <li><strong>데이팅 카테고리 정책</strong>: Apple App Review Guideline 1.6 / Google Play Dating Policy 사전 점검 필수</li>
+                <li><strong>본인인증</strong>: NICE / KCB 등 국내 본인확인기관 연동 (계약은 클라이언트 명의)</li>
+                <li><strong>인프라</strong>: AWS Seoul 리전 (ap-northeast-2), 데이터 국외 반출 금지</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>Phase 2 AI 큐레이션 매칭(NLP) 모델 학습 및 운영 (확장 데이터 모델 설계는 포함, 모델 구현은 별도 계약)</li>
+                <li>오프라인 이벤트·소셜링 운영 시스템 (필요 시 별도 모듈)</li>
+                <li>매칭 결과 영상 통화 / 보이스 채팅 (1:1 텍스트 대화만 포함)</li>
+                <li>마케팅 자동화 도구(브레이즈, 앱스플라이어 등) 통합 (필요 시 별도)</li>
+                <li>웹 버전 (모바일 앱 전용, 관리자 웹은 별도)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 100일 기준 4단계(기획→디자인+개발→QA→런칭)로 진행하며, 4개 마일스톤에서 클라이언트 검수를 받습니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 기획 / 설계</td><td>Day 1–18 (약 2.5주)</td><td>요구사항 정의서, 화면 기획서, 3채널 정책서, 보안 아키텍처, ERD</td></tr>
+                  <tr><td>Phase 2: 디자인 + 개발 착수</td><td>Day 19–45 (약 4주)</td><td>Figma 디자인 시스템 + 70화면, 백엔드 API 골격, 인프라 구축</td></tr>
+                  <tr><td>Phase 3: 풀스택 개발</td><td>Day 46–80 (약 5주)</td><td>3채널 매칭 앱, 인앱결제, 관리자 웹, KMS 보안 모듈, 통합 베타</td></tr>
+                  <tr><td>Phase 4: QA + 스토어 심사 + 런칭</td><td>Day 81–100 (약 3주)</td><td>통합 QA, App Store / Play Store 심사, 런칭, 1개월 하자보수 시작</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">기획 / 설계</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 1–18</p>
+                <p class="text-sm leading-7 text-slate-600">킥오프 워크숍, 3채널 IA·과금 정책 확정, 보안 아키텍처 설계, 화면 기획서(스토리보드) 70+ 화면 작성, ERD 1차 확정</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 요구사항 정의서, 화면 기획서, 정책 문서, ERD, 시스템 아키텍처 다이어그램</li>
+                  <li>킥오프 미팅 (Day 1) + 정책 확정 워크숍 (Day 8) + 기획서 검토 미팅 (Day 18)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">디자인 + 백엔드 개발 착수</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 19–45</p>
+                <p class="text-sm leading-7 text-slate-600">Figma 디자인 시스템 → 앱 50화면 → 관리자 웹 20화면 디자인. 동시에 NestJS 백엔드 API 골격, AWS 인프라(KMS, RDS, S3, ElastiCache) 구축, 본인인증·서류 업로드·KMS 암호화 모듈 우선 개발</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: Figma 원본 + 디자인 시스템, 백엔드 API 50% (인증·서류·매칭 골격), AWS 인프라 가동</li>
+                  <li>디자인 1차 검토 미팅 (Day 30) + 인증/보안 모듈 데모 (Day 40)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">풀스택 개발</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 46–80</p>
+                <p class="text-sm leading-7 text-slate-600">Flutter 앱 3채널 UI 풀구현, 인앱결제 + 다이아 지갑, 차등 과금 알고리즘, 1:1 대화/푸시, 관리자 웹 풀구현, 통합 베타 빌드 배포(Day 80)</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: iOS/Android 베타 빌드 (TestFlight + Internal Testing), 관리자 웹 베타, 통합 API 100%</li>
+                  <li>3채널 UX 검토 (Day 60) + 결제 시나리오 데모 (Day 70) + 통합 베타 리뷰 (Day 80)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">QA + 스토어 심사 + 런칭</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 81–100</p>
+                <p class="text-sm leading-7 text-slate-600">통합 QA 시나리오 테스트, 보안 점검(서류 즉시 파기 검증, 결제 멱등 검증), App Store / Google Play 심사 제출 (Day 88), 심사 대응, 정식 런칭 (Day 100), 1개월 하자보수 시작</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 정식 출시 앱 (iOS/Android), 운영 가이드, 사용자 매뉴얼, 1개월 하자보수 운영</li>
+                  <li>QA 결과 리뷰 (Day 87) + 스토어 심사 대응 보고 (Day 95) + 런칭 회고 (Day 100)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 기획 / 설계 완료</td><td>Day 18</td><td>요구사항 정의서·화면 기획서·정책 문서·ERD 클라이언트 승인</td></tr>
+                  <tr><td>M2: 디자인 완료 + 보안 모듈 데모</td><td>Day 45</td><td>Figma 전체 화면 승인, 서류 KMS 암호화·즉시 파기 모듈 작동 확인</td></tr>
+                  <tr><td>M3: 통합 베타 빌드</td><td>Day 80</td><td>iOS/Android 베타 빌드 설치 가능, 3채널 매칭+결제 시나리오 통과</td></tr>
+                  <tr><td>M4: 정식 런칭</td><td>Day 100</td><td>App Store / Play Store 정식 노출, 운영 가이드·매뉴얼 인계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet (30~45분)</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + 문서 + 베타 빌드</td><td>단계 완료 시 (M1~M4)</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues / Linear</td><td>상시 (티켓 단위)</td></tr>
+                <tr><td>긴급 대응</td><td>전화 + Slack 멘션</td><td>업무 시간 중 즉시</td></tr>
+              </table>
+
+              <h2>일정 리스크 및 대응</h2>
+              <ul>
+                <li><strong>App Store 심사 지연 (데이팅 카테고리)</strong>: Day 88 1차 제출 + 리젝 대비 Day 95 재제출 버퍼 확보. 데이팅 앱 심사 사유(미성년자 보호, 결제 정책 등) 사전 점검.</li>
+                <li><strong>본인인증 / 인앱결제 외부 API 응답 지연</strong>: Phase 2부터 우선 연동 + 통합 테스트, 우회 환경 구축.</li>
+                <li><strong>요구사항 변경</strong>: M1 기준 스코프 동결, 추가 요청은 변경 관리 절차로 별도 산정.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PORTFOLIO -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트의 핵심 영역(매칭 플랫폼, Flutter 양대 마켓 출시, 인앱결제·게이미피케이션, 보안 아키텍처)에 직접적인 수행 경험을 보유하고 있습니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">12</p>
+              <p class="mt-1 text-sm text-slate-500">Connectin 마이크로서비스</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3<span class="text-base">개월</span></p>
+              <p class="mt-1 text-sm text-slate-500">Connectin 풀스택 출시</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3<span class="text-base">년+</span></p>
+              <p class="mt-1 text-sm text-slate-500">DayStarter 운영 (인앱결제)</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100<span class="text-base">%</span></p>
+              <p class="mt-1 text-sm text-slate-500">참여율 (모든 프로젝트)</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Connectin -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">매칭 플랫폼 / B2B</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Connectin (디지털 명함 & 네트워킹 플랫폼)</h3>
+              <p class="mt-1 text-sm text-slate-400">B2B 네트워킹 / 매칭 / 베트남 시장 · 2025.05–2025.08 (3개월)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>물리적 명함 교환의 한계를 해결하기 위해 OCR 스캐닝, E2E 암호화 메시징, BLE/GPS 근거리 탐색을 결합한 디지털 명함·네트워킹 플랫폼. 비즈니스 전문가는 디지털 명함을 만들고 근처 전문가를 실시간으로 발견·연결합니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>Signal Protocol E2E 암호화 메시징 (서버 운영자조차 메시지 미열람)</li>
+                  <li>BLE + GPS 이중 모드 근거리 사용자 탐색 (오프라인 매칭)</li>
+                  <li>OCR 명함 스캐닝 (자동 디지털화)</li>
+                  <li>소셜 피드 + 1:1 메시징 + 비즈니스 네트워킹</li>
+                  <li>관리자 패널 (RBAC, IP 화이트리스트, 대량 사용자 관리)</li>
+                  <li>12개 마이크로서비스 + 63 API 엔드포인트 + 41 모바일 기능 모듈</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>① 매칭 플랫폼 도메인 직접 경험</strong> — 프로필 기반 발견·매칭·1:1 대화 요청 흐름이 본 프로젝트의 3채널 매칭과 구조적으로 동일합니다. <strong>② Flutter + NestJS 풀스택</strong> — 동일 기술 스택으로 양대 마켓 출시. <strong>③ 보안 매칭</strong> — Signal Protocol 수준의 암호화 설계 경험으로 KMS 봉투 암호화·즉시 파기 아키텍처를 안정적으로 적용 가능. <strong>④ 3개월 풀스택 딜리버리</strong> — 100일 일정의 실현 근거.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.22</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Clean Architecture</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Express.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">PostgreSQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Signal Protocol</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS KMS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase Auth · FCM</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Docker · Nginx</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fortune App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2C 앱 / Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Fortune App (사주 기반 운세 앱)</h3>
+              <p class="mt-1 text-sm text-slate-400">B2C 모바일 앱 / 라이프스타일 · 2024.07–2024.09 (3개월)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>사주 분석 엔진 연동, 행운 번호 추천, 궁합 분석, 포인트·데일리 체크인 리워드, 자체 광고 SDK를 결합한 Flutter B2C 앱. 기획→디자인→개발→런칭까지 100% 단독 수행하여 양대 마켓 출시.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>사주(LF3) 분석 엔진 연동, 운세 결과 화면</li>
+                  <li>포인트 & 데일리 체크인 리워드 (게이미피케이션)</li>
+                  <li>자체 광고 SDK (flutter_ads) — 수익화 모델</li>
+                  <li>Google / Apple SSO 소셜 로그인</li>
+                  <li>운세 결과 스크린샷 공유 기능</li>
+                  <li>BLoC/Cubit + Clean Architecture (305 Dart 파일, ~16K LOC)</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>① Flutter B2C 풀사이클 3개월 딜리버리</strong> — 본 프로젝트와 동일한 기획+디자인+개발 단독 수행 + 100일 양대 마켓 출시 패턴. <strong>② 게이미피케이션 + 포인트 경제</strong> — 다이아 지갑·차등 차감과 동일한 가상 재화 경제 설계 노하우. <strong>③ 양대 마켓 심사 통과</strong> — Apple/Google 심사 사유 사전 점검 경험.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.22</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Dart</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC / Cubit</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Clean Architecture</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase Auth · Analytics · Crashlytics</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Node.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Retrofit + Dio</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AutoRoute</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Google / Apple SSO</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DayStarter -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2C 앱 / 게이미피케이션</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">DayStarter (Sleep-to-Earn 게이미피케이션 앱)</h3>
+              <p class="mt-1 text-sm text-slate-400">B2C 모바일 앱 / 헬스케어 · 2022.06–현재 (약 3년 운영)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>센서 기반 수면 검증과 7단계 루트박스 이코노미를 결합한 Sleep-to-Earn 게이미피케이션 앱. 행동 변화 게이미피케이션 + 가상 재화 경제 + Spine 2D 캐릭터 시스템을 운영.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>센서 기반 수면 검증 (ML Kit, 조도, 배터리 신호 융합)</li>
+                  <li>7단계 루트박스 가상 재화 이코노미</li>
+                  <li>Spine 2D 캐릭터 시스템 (게임형 UX)</li>
+                  <li>5개 레포 + 37 DB 모델 + ~50K LOC + 약 3년 지속 운영</li>
+                  <li>인앱결제 + 광고 + 자체 포인트 경제 운영 노하우</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>① 가상 재화 경제 장기 운영 경험</strong> — 다이아 지갑·차등 차감·이중 차감 방지 로직과 동일한 도메인. 3년 간 운영하며 결제·환불·악용 시나리오 전반에 대한 운영 노하우 보유. <strong>② Flutter + NestJS + PostgreSQL</strong> — 본 프로젝트 권장 스택과 동일. <strong>③ 행동 데이터 정형화 적재</strong> — Phase 2 NLP 큐레이션을 위한 행동 로그·해시태그 데이터 모델 설계 노하우 직접 활용 가능.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">TypeScript</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">PostgreSQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">ML Kit</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Spine 2D</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">In-App Purchase</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">미팅에서 더 자세히 논의하겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">서류 즉시 파기 로직과 3채널 과금 동기화의 구체적 구현 방안, 유지보수 계약 조건을 미팅에서 상세히 설명드리겠습니다.</p>
+          </div>
+        </div>
+
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 프리미엄 하이브리드 데이팅 앱 (가칭 '해시태그') 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
